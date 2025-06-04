@@ -267,16 +267,18 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 ],
               );
             } else if (snapshot.hasError) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.error, size: 40, color: Colors.red),
-                  Text(
-                    "Erro de conexão",
-                    style: TextStyle(fontSize: 40, fontFamily: "DancingScript"),
-                  ),
-                ],
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error, size: 40, color: Colors.red),
+                    Text(
+                      "Erro de conexão",
+                      style: TextStyle(fontSize: 40, fontFamily: "DancingScript"),
+                    ),
+                  ],
+                ),
               );
             } else {
               return Center(child: CircularProgressIndicator());
