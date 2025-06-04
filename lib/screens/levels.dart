@@ -11,11 +11,19 @@ class LevelsScreen extends StatefulWidget {
 }
 
 class _LevelsScreenState extends State<LevelsScreen> {
+  late ControllerLevels controller;
+  @override
+  void initState() {
+    controller = Get.find<ControllerLevels>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final ControllerLevels controller = Get.put(ControllerLevels());
     return Scaffold(
       appBar: AppBar(
+        actions: [],
+        leading: null,
         centerTitle: true,
         title: const Text(
           'Niveis de Maturidade',
@@ -31,8 +39,7 @@ class _LevelsScreenState extends State<LevelsScreen> {
         child: ListView.builder(
           itemCount: controller.allLevels.length,
           itemBuilder: (context, index) {
-            
-            return LevelCard(level: controller.allLevels[index]);
+            return Obx(() => LevelCard(level: controller.allLevels[index]));
           },
         ),
       ),

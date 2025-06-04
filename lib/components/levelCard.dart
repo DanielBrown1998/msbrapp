@@ -11,8 +11,7 @@ class LevelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ControllerLevel controllerLevel = Get.put(
-      ControllerLevel(),
+    final ControllerLevel controllerLevel = Get.find<ControllerLevel>(
       tag: level.name,
     );
     controllerLevel.level.value = level.name;
@@ -24,7 +23,12 @@ class LevelCard extends StatelessWidget {
                 : const Color.fromARGB(235, 235, 235, 235),
         child: ListTile(
           onTap: () {
-            Get.to(QuestionsScreen(level: level.name));
+            Get.to(
+              () => QuestionsScreen(level: level.name),
+              duration: Duration(seconds: 1),
+              transition: Transition.rightToLeft,
+              curve: Curves.easeInOutCubic,
+            );
           },
           leading: Icon(level.icon, size: 80),
           title: Text(

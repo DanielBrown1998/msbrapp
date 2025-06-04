@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:msbrapp/api/data.dart' as api;
 import 'package:msbrapp/controller/controller.dart';
 import 'package:msbrapp/models/question.dart';
+import 'package:msbrapp/screens/home.dart';
 import 'package:msbrapp/screens/levels.dart';
 
 class QuestionsScreen extends StatefulWidget {
@@ -45,7 +46,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 ),
                 IconButton(
                   onPressed: () {
-                    Get.off(LevelsScreen());
+                    Get.back();
+                    // Get.off(LevelsScreen());
                   },
                   icon: Icon(Icons.arrow_back),
                   iconSize: 40,
@@ -134,14 +136,29 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                     child: Obx(
                                       () => ElevatedButton(
                                         onPressed: () {
+                                          Color color = Colors.grey.shade600;
                                           // setando a escolha
                                           controllerQuestion.choice.value = i;
                                           //add a escolha ao level associado
                                           controllerLevel.choices[index] =
                                               (i + 1) *
                                               (1 / question.options.length);
-                                          controllerQuestion.colors[i] =
-                                              Colors.grey.shade600;
+                                          for (
+                                            int j = 0;
+                                            j <
+                                                controllerQuestion
+                                                    .colors
+                                                    .length;
+                                            j++
+                                          ) {
+                                            if (controllerQuestion.colors[j] ==
+                                                    color &&
+                                                i != j) {
+                                              controllerQuestion.colors[j] =
+                                                  Colors.white;
+                                            }
+                                          }
+                                          controllerQuestion.colors[i] = color;
                                           //add no controle de niveis
                                           controllerLevels.levels.add(
                                             widget.level,
@@ -219,7 +236,12 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               snackPosition: SnackPosition.BOTTOM,
                             );
                           }
-                          Get.off(LevelsScreen());
+                          Get.offAll(
+                            () => LevelsScreen(),
+                            duration: Duration(seconds: 1),
+                            transition: Transition.leftToRight,
+                            curve: Curves.easeInOutCubic,
+                          );
                         },
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 2,

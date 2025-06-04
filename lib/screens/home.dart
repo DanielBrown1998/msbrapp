@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:msbrapp/controller/controller.dart';
 import 'package:msbrapp/screens/levels.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key, required this.title});
+  const Home({super.key, this.title = 'MPS Br.'});
 
   final String title;
   static const String description =
@@ -19,6 +20,15 @@ e é baseado em normas internacionais de qualidade, adaptadas à realidade brasi
 
 class _HomeState extends State<Home> {
   String get description => Home.description;
+
+  @override
+  void initState() {
+    final controller = Get.put(ControllerLevels());
+    for (int i = 0; i < controller.allLevels.length; i++) {
+      Get.put(ControllerLevel(), tag: controller.allLevels[i].name);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +56,12 @@ class _HomeState extends State<Home> {
                   height: MediaQuery.of(context).size.height / 12,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.off(() => const LevelsScreen());
+                      Get.off(
+                        () => LevelsScreen(),
+                        duration: Duration(seconds: 1),
+                        transition: Transition.downToUp,
+                        curve: Curves.easeInOutCubic,
+                      );
                     },
                     child: Row(
                       spacing: 5,
