@@ -88,6 +88,9 @@ flutter:
         - asset: fonts/Metropolis-Bold.otf 
     - family: Metropolis-Light
       fonts:
-        - asset: fonts/Metropolis-Light.otf 
+        - asset: fonts/Metropolis-Light.otf
+    - family: Edu
+      fonts:
+        - asset: fonts/EduQLDHand-Regular.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

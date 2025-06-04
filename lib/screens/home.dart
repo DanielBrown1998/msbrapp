@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               const Text(
                 'MPS Br.',
-                style: TextStyle(fontFamily: "DancingScript", fontSize: 40),
+                style: TextStyle(fontFamily: "Edu", fontSize: 40),
               ),
               Text(
                 description,
@@ -58,7 +58,8 @@ class _HomeState extends State<Home> {
                           "iniciar",
                           style: TextStyle(
                             fontSize: 20,
-                            fontFamily: "Metropolis-Bold",
+                            fontFamily: "Edu",
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],

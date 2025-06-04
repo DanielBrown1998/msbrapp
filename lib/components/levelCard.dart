@@ -33,7 +33,7 @@ class LevelCard extends StatelessWidget {
           ),
           subtitle: Text(
             level.description,
-            style: TextStyle(fontSize: 20, fontFamily: "Metropolis-Light"),
+            style: TextStyle(fontSize: 20, fontFamily: "Edu"),
           ),
           enabled: true,
           shape: RoundedRectangleBorder(

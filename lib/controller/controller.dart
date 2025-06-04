@@ -1,14 +1,49 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:msbrapp/models/company.dart';
+import 'package:msbrapp/models/level.dart';
 import 'package:msbrapp/models/question.dart';
 
 class ControllerLevels extends GetxController {
+  RxList<Level> allLevels =
+      [
+        Level(
+          name: "G",
+          description: "Parcialmente Gerenciado",
+          icon: Icons.analytics_outlined,
+        ),
+        Level(
+          name: "F",
+          description: "Gerenciado",
+          icon: Icons.local_activity_outlined,
+        ),
+        Level(
+          name: "E",
+          description: "Definido",
+          icon: Icons.bookmark_border_outlined,
+        ),
+        Level(
+          name: "D",
+          description: "Quantitativamente Gerenciado",
+          icon: Icons.precision_manufacturing_outlined,
+        ),
+        Level(
+          name: "C",
+          description: "Em Otimização (Nível C)",
+          icon: Icons.trending_up_outlined,
+        ),
+        Level(
+          name: "B",
+          description: "Em Otimização (Nível B)",
+          icon: Icons.verified_outlined,
+        ),
+        Level(
+          name: "A",
+          description: "Em Avaliação",
+          icon: Icons.assessment_outlined,
+        ),
+      ].obs;
   RxList levels = [].obs;
-
-  addLevel(String level) {
-    levels.add(level);
-    update();
-  }
 }
 
 class ControllerLevel extends GetxController {
@@ -17,6 +52,8 @@ class ControllerLevel extends GetxController {
   RxList choices = [].obs;
   RxList answers = [].obs;
   RxBool aproved = false.obs;
+
+  
 }
 
 class ControllerCompanies extends GetxController {

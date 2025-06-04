@@ -20,12 +20,47 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     final ControllerLevel controllerLevel = Get.find<ControllerLevel>(
       tag: widget.level,
     );
-
+    final ControllerLevels controllerLevels = Get.find<ControllerLevels>();
+    int index = controllerLevels.allLevels.indexWhere(
+      (element) => element.name == widget.level,
+    );
+    if (index > 0 &&
+        !controllerLevels.levels.contains(
+          controllerLevels.allLevels[index - 1].name,
+        )) {
+      return Scaffold(
+        backgroundColor: Colors.red.shade200,
+        body: Center(
+          child: SizedBox(
+            width: double.maxFinite,
+            height: Get.size.height / 2,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.block, size: 60, color: Colors.red.shade700),
+                Text(
+                  "Nivel ${widget.level} bloqueado!",
+                  style: TextStyle(fontSize: 40, fontFamily: "DancingScript"),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Get.off(LevelsScreen());
+                  },
+                  icon: Icon(Icons.arrow_back),
+                  iconSize: 40,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "nivel de maturidade: ${widget.level}",
-          style: TextStyle(fontFamily: "Metropolis-Bold", fontSize: 24),
+          style: TextStyle(fontFamily: "Edu", fontSize: 24),
         ),
       ),
       body: Padding(
@@ -35,12 +70,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               controllerLevel.questions.value = snapshot.data!;
-
               controllerLevel.choices.value = List.generate(
                 snapshot.data!.length,
                 (index) => 0,
               );
-
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -71,7 +104,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                             Text(
                               "Question ${index + 1}:",
                               style: TextStyle(
-                                fontSize: 25,
+                                fontSize: 20,
                                 fontFamily: "Metropolis-Bold",
                                 fontWeight: FontWeight.bold,
                               ),
@@ -79,7 +112,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                             Text(
                               "-> ${question.question}",
                               style: TextStyle(
-                                fontSize: 30,
+                                fontSize: 20,
                                 fontFamily: "Metropolis",
                               ),
                             ),
@@ -101,12 +134,18 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                     child: Obx(
                                       () => ElevatedButton(
                                         onPressed: () {
+                                          // setando a escolha
                                           controllerQuestion.choice.value = i;
+                                          //add a escolha ao level associado
                                           controllerLevel.choices[index] =
                                               (i + 1) *
                                               (1 / question.options.length);
                                           controllerQuestion.colors[i] =
                                               Colors.grey.shade600;
+                                          //add no controle de niveis
+                                          controllerLevels.levels.add(
+                                            widget.level,
+                                          );
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
@@ -125,7 +164,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                             "${question.options[i]} \n",
                                             style: TextStyle(
                                               overflow: TextOverflow.visible,
-                                              fontSize: 20,
+                                              fontSize: 18,
                                               color:
                                                   controllerQuestion
                                                               .colors[i] ==
@@ -193,7 +232,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                 "Responder",
                                 style: TextStyle(
                                   fontSize: 20,
-                                  fontFamily: "Metropolis-Bold",
+                                  fontFamily: "Edu",
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
@@ -211,7 +251,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 children: [
                   Icon(Icons.error, size: 40, color: Colors.red),
                   Text(
-                    snapshot.error.toString(),
+                    "Erro de conexão",
                     style: TextStyle(fontSize: 40, fontFamily: "DancingScript"),
                   ),
                 ],
