@@ -16,6 +16,7 @@ class _LevelsScreenState extends State<LevelsScreen> {
     final ControllerLevels controller = Get.put(ControllerLevels());
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           'Niveis de Maturidade',
           style: TextStyle(

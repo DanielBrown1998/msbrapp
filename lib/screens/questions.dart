@@ -40,7 +40,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               children: [
                 Icon(Icons.block, size: 60, color: Colors.red.shade700),
                 Text(
-                  "Nivel ${widget.level} bloqueado!",
+                  "Nivel ' ${widget.level} ' bloqueado!",
                   style: TextStyle(fontSize: 40, fontFamily: "DancingScript"),
                 ),
                 IconButton(

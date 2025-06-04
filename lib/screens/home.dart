@@ -46,7 +46,7 @@ class _HomeState extends State<Home> {
                   height: MediaQuery.of(context).size.height / 12,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.to(LevelsScreen());
+                      Get.off(() => const LevelsScreen());
                     },
                     child: Row(
                       spacing: 5,

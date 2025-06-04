@@ -36,6 +36,8 @@ class LevelCard extends StatelessWidget {
             style: TextStyle(fontSize: 20, fontFamily: "Edu"),
           ),
           enabled: true,
+          onLongPress: () {},
+          splashColor: Colors.blueGrey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.elliptical(2, 1)),
           ),
