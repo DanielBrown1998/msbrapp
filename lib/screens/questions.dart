@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:msbrapp/api/data.dart' as api;
 import 'package:msbrapp/controller/controller.dart';
 import 'package:msbrapp/models/question.dart';
+import 'package:msbrapp/screens/levels.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final String level;
@@ -18,8 +17,7 @@ class QuestionsScreen extends StatefulWidget {
 class _QuestionsScreenState extends State<QuestionsScreen> {
   @override
   Widget build(BuildContext context) {
-    final ControllerLevel controllerLevel = Get.put(
-      ControllerLevel(),
+    final ControllerLevel controllerLevel = Get.find<ControllerLevel>(
       tag: widget.level,
     );
 
@@ -27,7 +25,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       appBar: AppBar(
         title: Text(
           "nivel de maturidade: ${widget.level}",
-          style: TextStyle(fontFamily: "DancingScript", fontSize: 30),
+          style: TextStyle(fontFamily: "Metropolis-Bold", fontSize: 24),
         ),
       ),
       body: Padding(
@@ -37,14 +35,12 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               controllerLevel.questions.value = snapshot.data!;
-              controllerLevel.answers.value = List.generate(
-                snapshot.data!.length,
-                (index) => snapshot.data![index]['answer'],
-              );
+
               controllerLevel.choices.value = List.generate(
                 snapshot.data!.length,
-                (index) => -1,
+                (index) => 0,
               );
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -57,15 +53,14 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                           snapshot.data![index],
                         );
 
-                        String quest = question.question;
-
-                        List<String> options = question.options;
-
                         ControllerQuestion controllerQuestion = Get.put(
                           ControllerQuestion(),
                           tag: question.id,
                         );
-
+                        controllerQuestion.colors.value = List.generate(
+                          question.options.length,
+                          (index) => Colors.white,
+                        );
                         controllerQuestion.setQuestion(question);
 
                         return Column(
@@ -82,7 +77,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               ),
                             ),
                             Text(
-                              "-> $quest",
+                              "-> ${question.question}",
                               style: TextStyle(
                                 fontSize: 30,
                                 fontFamily: "Metropolis",
@@ -99,35 +94,46 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               height: 500,
                               width: double.maxFinite,
                               child: ListView.builder(
-                                itemCount: options.length,
+                                itemCount: question.options.length,
                                 itemBuilder: (context, i) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        controllerQuestion.choice.value = i;
-                                        if (controllerQuestion.choice.value ==
-                                            controllerQuestion.answer.value) {
-                                          controllerLevel.choices[index] = i;
-                                        } else {}
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: question.color,
-                                        elevation: 10,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.elliptical(2, 1),
+                                    child: Obx(
+                                      () => ElevatedButton(
+                                        onPressed: () {
+                                          controllerQuestion.choice.value = i;
+                                          controllerLevel.choices[index] =
+                                              (i + 1) *
+                                              (1 / question.options.length);
+                                          controllerQuestion.colors[i] =
+                                              Colors.grey.shade600;
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              controllerQuestion.colors[i] ??
+                                              Colors.white,
+                                          elevation: 10,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                              Radius.elliptical(2, 1),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "${options[index]} \n",
-                                          style: TextStyle(
-                                            overflow: TextOverflow.visible,
-                                            fontSize: 20,
-                                            fontFamily: "Metropolis-Light",
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "${question.options[i]} \n",
+                                            style: TextStyle(
+                                              overflow: TextOverflow.visible,
+                                              fontSize: 20,
+                                              color:
+                                                  controllerQuestion
+                                                              .colors[i] ==
+                                                          Colors.grey.shade600
+                                                      ? Colors.white
+                                                      : Colors.black87,
+                                              fontFamily: "Metropolis-Light",
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -147,12 +153,34 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: ElevatedButton(
                         onPressed: () {
-                          print(controllerLevel.choices);
-                          print(controllerLevel.answers);
-                          if (controllerLevel.choices.value ==
-                              controllerLevel.answers.value) {
-                            //TODO: ir para uma pagina de parabens
+                          double sum = controllerLevel.choices.reduce(
+                            (a, b) => a + b,
+                          );
+                          double percent =
+                              (sum / controllerLevel.choices.length) * 100;
+                          if (percent >= 75) {
+                            controllerLevel.aproved.value = true;
+                            Get.snackbar(
+                              "Possivelmente sera Aprovado",
+                              "${percent.toStringAsFixed(2)}% de aproveitamento}",
+                              duration: Duration(seconds: 5),
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white,
+                              icon: Icon(Icons.check, color: Colors.white),
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          } else {
+                            Get.snackbar(
+                              "Possivelmente sera Reprovado",
+                              "${percent.toStringAsFixed(2)}% de aproveitamento}",
+                              duration: Duration(seconds: 5),
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                              icon: Icon(Icons.check, color: Colors.white),
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
                           }
+                          Get.off(LevelsScreen());
                         },
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 2,

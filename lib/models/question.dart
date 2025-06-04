@@ -1,13 +1,10 @@
-import 'package:flutter/material.dart';
-
 class Question {
   final String id;
   final String question;
   final List<String> options;
   final int answer;
   int choice = -1;
-  Color color = Colors.white;
-
+  List<dynamic> colors = [];
 
   Question({
     required this.id,

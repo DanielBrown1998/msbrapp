@@ -16,6 +16,7 @@ class ControllerLevel extends GetxController {
   RxList questions = [].obs;
   RxList choices = [].obs;
   RxList answers = [].obs;
+  RxBool aproved = false.obs;
 }
 
 class ControllerCompanies extends GetxController {
@@ -33,6 +34,7 @@ class ControllerQuestion extends GetxController {
   RxInt answer = 0.obs;
   RxString question = "".obs;
   RxList options = [].obs;
+  RxList colors = [].obs;
   RxString id = "".obs;
 
   setQuestion(Question quest) {

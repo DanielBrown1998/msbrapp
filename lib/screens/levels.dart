@@ -58,7 +58,7 @@ class _LevelsScreenState extends State<LevelsScreen> {
       appBar: AppBar(
         title: const Text(
           'Niveis de Maturidade',
-          style: TextStyle(fontFamily: "DancingScript", fontSize: 30),
+          style: TextStyle(fontFamily: "Metropolis-Bold", fontSize: 26),
         ),
       ),
       body: Padding(
