@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:msbrapp/api/data.dart' as api;
 import 'package:msbrapp/controller/controller.dart';
 import 'package:msbrapp/models/question.dart';
-import 'package:msbrapp/screens/home.dart';
 import 'package:msbrapp/screens/levels.dart';
 
 class QuestionsScreen extends StatefulWidget {
@@ -22,9 +21,11 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       tag: widget.level,
     );
     final ControllerLevels controllerLevels = Get.find<ControllerLevels>();
+
     int index = controllerLevels.allLevels.indexWhere(
       (element) => element.name == widget.level,
     );
+
     if (index > 0 &&
         !controllerLevels.levels.contains(
           controllerLevels.allLevels[index - 1].name,
@@ -47,7 +48,6 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 IconButton(
                   onPressed: () {
                     Get.back();
-                    // Get.off(LevelsScreen());
                   },
                   icon: Icon(Icons.arrow_back),
                   iconSize: 40,
@@ -76,6 +76,26 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 snapshot.data!.length,
                 (index) => 0,
               );
+
+              for (int i = 0; i < snapshot.data!.length; i++) {
+                // print(snapshot.data![i]["id"]);
+                Question question = Question.fromJson(snapshot.data![i]);
+                final ControllerQuestion controllerQuestion = Get.put(
+                  ControllerQuestion(),
+                  tag: snapshot.data![i]['id'],
+                );
+                controllerQuestion.setQuestion(question);
+                int len = snapshot.data![i]['options'].length;
+                controllerLevel.answers.value = List.generate(
+                  len,
+                  (index) => -1,
+                );
+                controllerQuestion.colors.value = List.generate(
+                  len,
+                  (index) => Colors.white,
+                );
+              }
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -84,19 +104,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                     child: ListView.builder(
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
-                        Question question = Question.fromJson(
-                          snapshot.data![index],
-                        );
-
-                        ControllerQuestion controllerQuestion = Get.put(
-                          ControllerQuestion(),
-                          tag: question.id,
-                        );
-                        controllerQuestion.colors.value = List.generate(
-                          question.options.length,
-                          (index) => Colors.white,
-                        );
-                        controllerQuestion.setQuestion(question);
+                        ControllerQuestion controllerQuestion =
+                            Get.find<ControllerQuestion>(
+                              tag: snapshot.data![index]['id'],
+                            );
 
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -112,7 +123,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               ),
                             ),
                             Text(
-                              "-> ${question.question}",
+                              "-> ${controllerQuestion.question}",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontFamily: "Metropolis",
@@ -126,10 +137,15 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                   width: 2,
                                 ),
                               ),
-                              height: 500,
+                              height:
+                                  150 *
+                                      controllerQuestion.options.length
+                                          .toDouble() +
+                                  20,
                               width: double.maxFinite,
                               child: ListView.builder(
-                                itemCount: question.options.length,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: controllerQuestion.options.length,
                                 itemBuilder: (context, i) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -142,7 +158,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                           //add a escolha ao level associado
                                           controllerLevel.choices[index] =
                                               (i + 1) *
-                                              (1 / question.options.length);
+                                              (1 /
+                                                  controllerQuestion
+                                                      .options
+                                                      .length);
                                           for (
                                             int j = 0;
                                             j <
@@ -159,10 +178,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                             }
                                           }
                                           controllerQuestion.colors[i] = color;
-                                          //add no controle de niveis
-                                          controllerLevels.levels.add(
-                                            widget.level,
-                                          );
+                                          //variavel de controller para responder
+
+                                          controllerLevel.answers[index] =
+                                              i;
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
@@ -178,7 +197,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
-                                            "${question.options[i]} \n",
+                                            "${controllerQuestion.options[i]} \n",
                                             style: TextStyle(
                                               overflow: TextOverflow.visible,
                                               fontSize: 18,
@@ -209,39 +228,55 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: ElevatedButton(
                         onPressed: () {
+                          // soma todas as escolhas
                           double sum = controllerLevel.choices.reduce(
                             (a, b) => a + b,
                           );
+                          // calcula o percentual
                           double percent =
                               (sum / controllerLevel.choices.length) * 100;
-                          if (percent >= 75) {
-                            controllerLevel.aproved.value = true;
+                          if (controllerLevel.answers.length !=
+                              controllerLevel.questions.length) {
                             Get.snackbar(
-                              "Possivelmente sera Aprovado",
-                              "${percent.toStringAsFixed(2)}% de aproveitamento}",
-                              duration: Duration(seconds: 5),
-                              backgroundColor: Colors.green,
+                              "Erro",
+                              'Responda todas as perguntas',
+                              duration: Duration(seconds: 3),
+                              backgroundColor: Colors.yellow,
                               colorText: Colors.white,
-                              icon: Icon(Icons.check, color: Colors.white),
-                              snackPosition: SnackPosition.BOTTOM,
                             );
                           } else {
-                            Get.snackbar(
-                              "Possivelmente sera Reprovado",
-                              "${percent.toStringAsFixed(2)}% de aproveitamento}",
-                              duration: Duration(seconds: 5),
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                              icon: Icon(Icons.check, color: Colors.white),
-                              snackPosition: SnackPosition.BOTTOM,
+                            if (percent >= 75) {
+                              //variavel de controle para checar se foi aprovado
+                              controllerLevel.aproved.value = true;
+                              //add no controle de niveis para validar a aprovacao no levels
+                              controllerLevels.levels.add(widget.level);
+                              Get.snackbar(
+                                "Possivelmente sera Aprovado",
+                                "${percent.toStringAsFixed(2)}% de aproveitamento}",
+                                duration: Duration(seconds: 5),
+                                backgroundColor: Colors.green,
+                                colorText: Colors.white,
+                                icon: Icon(Icons.check, color: Colors.white),
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            } else {
+                              Get.snackbar(
+                                "Possivelmente sera Reprovado",
+                                "${percent.toStringAsFixed(2)}% de aproveitamento}",
+                                duration: Duration(seconds: 5),
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white,
+                                icon: Icon(Icons.check, color: Colors.white),
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            }
+                            Get.offAll(
+                              () => LevelsScreen(),
+                              duration: Duration(seconds: 1),
+                              transition: Transition.leftToRight,
+                              curve: Curves.easeInOutCubic,
                             );
                           }
-                          Get.offAll(
-                            () => LevelsScreen(),
-                            duration: Duration(seconds: 1),
-                            transition: Transition.leftToRight,
-                            curve: Curves.easeInOutCubic,
-                          );
                         },
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
@@ -275,7 +310,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                     Icon(Icons.error, size: 40, color: Colors.red),
                     Text(
                       "Erro de conexão",
-                      style: TextStyle(fontSize: 40, fontFamily: "DancingScript"),
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontFamily: "DancingScript",
+                      ),
                     ),
                   ],
                 ),

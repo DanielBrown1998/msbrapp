@@ -73,6 +73,8 @@ class ControllerQuestion extends GetxController {
   RxList options = [].obs;
   RxList colors = [].obs;
   RxString id = "".obs;
+  RxList answers = [].obs;
+
 
   setQuestion(Question quest) {
     answer.value = quest.answer;
