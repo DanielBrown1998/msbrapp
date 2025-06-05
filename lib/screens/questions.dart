@@ -180,8 +180,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                           controllerQuestion.colors[i] = color;
                                           //variavel de controller para responder
 
-                                          controllerLevel.answers[index] =
-                                              i;
+                                          controllerLevel.answers[index] = i;
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
@@ -228,15 +227,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: ElevatedButton(
                         onPressed: () {
-                          // soma todas as escolhas
-                          double sum = controllerLevel.choices.reduce(
-                            (a, b) => a + b,
-                          );
-                          // calcula o percentual
-                          double percent =
-                              (sum / controllerLevel.choices.length) * 100;
-                          if (controllerLevel.answers.length !=
-                              controllerLevel.questions.length) {
+                          if (controllerLevel.answers.contains(-1)) {
                             Get.snackbar(
                               "Erro",
                               'Responda todas as perguntas',
@@ -245,6 +236,13 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               colorText: Colors.white,
                             );
                           } else {
+                            // soma todas as escolhas
+                            double sum = controllerLevel.choices.reduce(
+                              (a, b) => a + b,
+                            );
+                            // calcula o percentual
+                            double percent =
+                                (sum / controllerLevel.choices.length) * 100;
                             if (percent >= 75) {
                               //variavel de controle para checar se foi aprovado
                               controllerLevel.aproved.value = true;
