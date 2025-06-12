@@ -1,8 +1,9 @@
 import "dart:convert";
 
 import "package:http/http.dart";
+import "package:msbrapp/api/token.dart";
 
-String token = "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";
+
 String url = "https://api.github.com/gists/62f886088ec73a1ca3e7e179e4075a61";
 
 Future<List<dynamic>> searchQuestions({required String level}) async {
