@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:msbrapp/api/data.dart' as api;
 import 'package:msbrapp/models/company.dart';
 import 'package:msbrapp/models/level.dart';
 import 'package:msbrapp/models/question.dart';
@@ -53,7 +54,11 @@ class ControllerLevel extends GetxController {
   RxList answers = [].obs;
   RxBool aproved = false.obs;
 
-  
+  Future<List<dynamic>> searchQuestion() async {
+    List<dynamic> list = await api.searchQuestions(level: level.value);
+    questions.value = list;
+    return list;
+  }
 }
 
 class ControllerCompanies extends GetxController {
@@ -62,7 +67,6 @@ class ControllerCompanies extends GetxController {
 
   addCompany(Company company) {
     companies.add(company);
-    update();
   }
 }
 
@@ -74,7 +78,6 @@ class ControllerQuestion extends GetxController {
   RxList colors = [].obs;
   RxString id = "".obs;
   RxList answers = [].obs;
-
 
   setQuestion(Question quest) {
     answer.value = quest.answer;

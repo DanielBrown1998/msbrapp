@@ -37,7 +37,3 @@ Future<List<dynamic>> searchQuestions({required String level}) async {
   }
   
 }
-
-void main() {
-  searchQuestions(level: "B");
-}
