@@ -11,7 +11,14 @@ class Level {
     this.icon = Icons.logo_dev_outlined,
   });
 
-  Map<String, dynamic> toJson() {
-    return {"name": name, "description": description, "icon": icon};
+  factory Level.fromMap(Map<String, dynamic> map) {
+    return Level(
+      name: map["name"],
+      description: map["description"]
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {"name": name, "description": description};
   }
 }

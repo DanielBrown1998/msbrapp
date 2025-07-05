@@ -56,8 +56,24 @@ Future<bool> setCompany(Company company) async {
   return false;
 }
 
-void main() async {
-  await setCompany(
-    Company(name: "Garage", level: Level(name: "G", description: "gerenciado")),
+Future<List<Company>> getAllCompanies() async {
+  http.Response response = await http.get(
+    Uri.parse(urlCompanies),
+    headers: {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    },
   );
+  List<dynamic> map = json.decode(
+    json.decode(response.body)["files"]["companies.json"]["content"],
+  );
+  List<Company> result = [];
+  for (var item in map) {
+    result.add(Company.fromMap(item));
+  }
+  return result;
+}
+
+void main() async {
+  await getAllCompanies();
 }
