@@ -3,7 +3,6 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 import "package:msbrapp/api/token.dart";
 import "package:msbrapp/models/company.dart";
-import "package:msbrapp/models/level.dart";
 
 String urlCompanies =
     "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
