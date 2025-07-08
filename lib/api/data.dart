@@ -73,6 +73,6 @@ Future<List<Company>> getAllCompanies() async {
   return result;
 }
 
-void main() async {
-  await getAllCompanies();
-}
+// void main() async {
+//   await getAllCompanies();
+// }

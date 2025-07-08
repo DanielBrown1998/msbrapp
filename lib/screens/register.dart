@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:msbrapp/controller/register_controller.dart';
+import 'package:msbrapp/models/company.dart';
 
 class Registerscreen extends StatefulWidget {
   const Registerscreen({super.key});
@@ -11,7 +14,11 @@ class Registerscreen extends StatefulWidget {
 class _RegisterscreenState extends State<Registerscreen> {
   TextEditingController searchCompanyController = TextEditingController();
   TextEditingController registerCompanyController = TextEditingController();
+
+  RegisterController registerController = Get.put(RegisterController());
+
   bool visible = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,22 +69,60 @@ class _RegisterscreenState extends State<Registerscreen> {
               child: Visibility(
                 visible: visible,
                 child: TextFormField(
-                  // initialValue: searchCompanyController.text,
-                  controller: registerCompanyController,
+                  initialValue: searchCompanyController.text,
                   maxLines: 1,
                   maxLength: 50,
+                  readOnly: true,
                   decoration: InputDecoration(
                     label: Text("registrar empresa"),
+                    helperText: "deseja cadastrar essa Compania?",
                   ),
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text(
-                (!visible) ? "buscar" : "cadastrar",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
+            Row(
+              mainAxisAlignment:
+                  (visible)
+                      ? MainAxisAlignment.spaceEvenly
+                      : MainAxisAlignment.center,
+              children: [
+                Visibility(
+                  visible: visible,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        visible = false;
+                      });
+                    },
+                    child: Text("esquecer"),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    var companyController = Get.find<RegisterController>();
+                    if (!visible) {
+                      Company? findCompany = await companyController.search(
+                        searchCompanyController.text,
+                      );
+                      if (findCompany == null) {
+                        setState(() {
+                          visible = true;
+                        });
+                      }
+                    } else {
+                      companyController.register(searchCompanyController.text);
+                    }
+                  },
+                  child: Text(
+                    (!visible) ? "buscar" : "cadastrar",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: (visible) ? Colors.green : Colors.black54,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

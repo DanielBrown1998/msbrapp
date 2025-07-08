@@ -21,4 +21,9 @@ class Level {
   Map<String, dynamic> toMap() {
     return {"name": name, "description": description};
   }
+
+  @override
+  String toString(){
+    return "$name: $description";
+  }
 }
