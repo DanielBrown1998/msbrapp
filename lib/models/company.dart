@@ -9,7 +9,7 @@ class Company {
   factory Company.fromMap(Map<String, dynamic> map) {
     return Company(
       name: map["name"],
-      level: Level.fromMap(map["levels"])
+      level: map["levels"] != null ? Level.fromMap(map["levels"]) : null,
     );
   }
 

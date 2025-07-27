@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:msbrapp/api/data.dart' as api;
+import 'package:msbrapp/api/data.dart';
 import 'package:msbrapp/models/company.dart';
 import 'package:msbrapp/models/level.dart';
 import 'package:msbrapp/models/question.dart';
@@ -55,6 +55,7 @@ class ControllerLevel extends GetxController {
   RxBool aproved = false.obs;
 
   Future<List<dynamic>> searchQuestion() async {
+    MpsbrApi api = MpsbrApi();
     List<dynamic> list = await api.searchQuestions(level: level.value);
     questions.value = list;
     return list;

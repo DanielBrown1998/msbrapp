@@ -1,78 +1,95 @@
 import "dart:convert";
 
-import "package:http/http.dart" as http;
+import "package:get/get_connect/connect.dart";
 import "package:msbrapp/api/token.dart";
 import "package:msbrapp/models/company.dart";
 
-String urlCompanies =
-    "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
-String urlQuestions =
-    "https://api.github.com/gists/62f886088ec73a1ca3e7e179e4075a61";
+class MpsbrApi extends GetConnect {
+  late String urlCompanies;
+  late String urlQuestions;
+  @override
+  void onInit() {
+    urlCompanies =
+        "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
+    urlQuestions =
+        "https://api.github.com/gists/62f886088ec73a1ca3e7e179e4075a61";
+    super.onInit();
+  }
 
-Future<List<dynamic>> searchQuestions({required String level}) async {
-  http.Response response = await http.get(
-    Uri.parse(urlQuestions),
-    headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    },
-  );
+  @override
+  bool get initialized {
+    return super.initialized &&
+        urlCompanies.isNotEmpty &&
+        urlQuestions.isNotEmpty;
+  }
 
-  if (response.statusCode == 200) {
-    List<dynamic> data =
-        json.decode(
-          json.decode(response.body)["files"]["mpsbr.json"]["content"],
-        )["questions"];
-    for (dynamic item in data) {
-      if (item["level"] == level.toUpperCase()) {
-        print("${item['level']} \n");
-        print("${item['name']} \n");
-        print("${item['characteristics']} \n");
-
-        return item['characteristics'];
-      }
+  Future<List<dynamic>> searchQuestions({required String level}) async {
+    if (!initialized) {
+      urlQuestions =
+          "https://api.github.com/gists/62f886088ec73a1ca3e7e179e4075a61";
     }
-    return [];
-  } else {
-    return [];
-  }
-}
 
-Future<bool> setCompany(Company company) async {
-  http.Response response = await http.post(
-    Uri.parse(urlCompanies),
-    headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    },
-    body: json.encode({
-      "files": {
-        "companies.json": {"content": json.encode(company.toJson())},
+    Response response = await get(
+      urlQuestions,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
       },
-    }),
-  );
-  if (response.statusCode.toString().startsWith("2")) return true;
-  return false;
-}
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> data =
+          json.decode(
+            response.body["files"]["mpsbr.json"]["content"],
+          )["questions"];
+      for (dynamic item in data) {
+        if (item["level"] == level.toUpperCase()) {
+          print("${item['level']} \n");
+          print("${item['name']} \n");
+          print("${item['characteristics']} \n");
 
-Future<List<Company>> getAllCompanies() async {
-  http.Response response = await http.get(
-    Uri.parse(urlCompanies),
-    headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    },
-  );
-  List<dynamic> map = json.decode(
-    json.decode(response.body)["files"]["companies.json"]["content"],
-  );
-  List<Company> result = [];
-  for (var item in map) {
-    result.add(Company.fromMap(item));
+          return item['characteristics'];
+        }
+      }
+      return [];
+    } else {
+      return [];
+    }
   }
-  return result;
-}
 
-// void main() async {
-//   await getAllCompanies();
-// }
+  Future<bool> setCompany(Company company) async {
+    if (!initialized) {
+      urlCompanies =
+          "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
+    }
+    Response response = await post(
+      urlCompanies,
+      company.toJson(),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+    );
+    if (response.statusCode.toString().startsWith("2")) return true;
+    return false;
+  }
+
+  Future<List<Company>> getAllCompanies() async {
+    if (!initialized) {
+      urlCompanies =
+          "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
+    }
+    Response response = await get(
+      urlCompanies,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+    );
+    var map = json.decode(response.body["files"]["companies.json"]["content"]);
+    List<Company> result = [];
+    for (var item in map) {
+      result.add(Company.fromMap(item));
+    }
+    return result;
+  }
+}

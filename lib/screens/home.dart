@@ -20,10 +20,10 @@ e é baseado em normas internacionais de qualidade, adaptadas à realidade brasi
 
 class _HomeState extends State<Home> {
   String get description => Home.description;
-
+  late ControllerLevels controller;
   @override
   void initState() {
-    final controller = Get.put(ControllerLevels());
+    controller = Get.put(ControllerLevels());
     for (int i = 0; i < controller.allLevels.length; i++) {
       Get.put(ControllerLevel(), tag: controller.allLevels[i].name);
     }
@@ -56,7 +56,7 @@ class _HomeState extends State<Home> {
                   height: MediaQuery.of(context).size.height / 12,
                   child: ElevatedButton(
                     onPressed: () {
-                      Get.off(
+                      Get.to(
                         () => LevelsScreen(),
                         duration: Duration(seconds: 1),
                         transition: Transition.downToUp,

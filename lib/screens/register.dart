@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:msbrapp/controller/register_controller.dart';
 import 'package:msbrapp/models/company.dart';
+import 'package:msbrapp/screens/home.dart';
 
 class Registerscreen extends StatefulWidget {
   const Registerscreen({super.key});
@@ -108,9 +109,22 @@ class _RegisterscreenState extends State<Registerscreen> {
                         setState(() {
                           visible = true;
                         });
+                      } else {
+                        Get.to(
+                          Home(),
+                          duration: Duration(seconds: 1),
+                          transition: Transition.leftToRight,
+                          curve: Curves.easeInOut,
+                        );
                       }
                     } else {
                       companyController.register(searchCompanyController.text);
+                      Get.to(
+                        Home(),
+                        duration: Duration(seconds: 1),
+                        transition: Transition.leftToRight,
+                        curve: Curves.easeInOut,
+                      );
                     }
                   },
                   child: Text(
