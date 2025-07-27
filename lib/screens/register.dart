@@ -20,6 +20,35 @@ class _RegisterscreenState extends State<Registerscreen> {
 
   bool visible = false;
 
+  Future<void> _authenticate() async {
+    var companyController = Get.find<RegisterController>();
+    if (!visible) {
+      Company? findCompany = await companyController.search(
+        searchCompanyController.text,
+      );
+      if (findCompany == null) {
+        setState(() {
+          visible = true;
+        });
+      } else {
+        Get.to(
+          Home(),
+          duration: Duration(seconds: 1),
+          transition: Transition.leftToRight,
+          curve: Curves.easeInOut,
+        );
+      }
+    } else {
+      companyController.register(searchCompanyController.text);
+      Get.to(
+        Home(),
+        duration: Duration(seconds: 1),
+        transition: Transition.leftToRight,
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,32 +129,7 @@ class _RegisterscreenState extends State<Registerscreen> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    var companyController = Get.find<RegisterController>();
-                    if (!visible) {
-                      Company? findCompany = await companyController.search(
-                        searchCompanyController.text,
-                      );
-                      if (findCompany == null) {
-                        setState(() {
-                          visible = true;
-                        });
-                      } else {
-                        Get.to(
-                          Home(),
-                          duration: Duration(seconds: 1),
-                          transition: Transition.leftToRight,
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    } else {
-                      companyController.register(searchCompanyController.text);
-                      Get.to(
-                        Home(),
-                        duration: Duration(seconds: 1),
-                        transition: Transition.leftToRight,
-                        curve: Curves.easeInOut,
-                      );
-                    }
+                    await _authenticate();
                   },
                   child: Text(
                     (!visible) ? "buscar" : "cadastrar",

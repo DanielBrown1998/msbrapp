@@ -1,5 +1,5 @@
 import "dart:convert";
-
+import 'package:msbrapp/helpers/urls.dart';
 import "package:get/get_connect/connect.dart";
 import "package:msbrapp/api/token.dart";
 import "package:msbrapp/models/company.dart";
@@ -9,10 +9,8 @@ class MpsbrApi extends GetConnect {
   late String urlQuestions;
   @override
   void onInit() {
-    urlCompanies =
-        "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
-    urlQuestions =
-        "https://api.github.com/gists/62f886088ec73a1ca3e7e179e4075a61";
+    urlCompanies = Urls.urlCompanies;
+    urlQuestions = Urls.urlQuestions;
     super.onInit();
   }
 
@@ -24,10 +22,7 @@ class MpsbrApi extends GetConnect {
   }
 
   Future<List<dynamic>> searchQuestions({required String level}) async {
-    if (!initialized) {
-      urlQuestions =
-          "https://api.github.com/gists/62f886088ec73a1ca3e7e179e4075a61";
-    }
+    if (!initialized) urlQuestions = Urls.urlQuestions;
 
     Response response = await get(
       urlQuestions,
@@ -43,10 +38,6 @@ class MpsbrApi extends GetConnect {
           )["questions"];
       for (dynamic item in data) {
         if (item["level"] == level.toUpperCase()) {
-          print("${item['level']} \n");
-          print("${item['name']} \n");
-          print("${item['characteristics']} \n");
-
           return item['characteristics'];
         }
       }
@@ -58,8 +49,7 @@ class MpsbrApi extends GetConnect {
 
   Future<bool> setCompany(Company company) async {
     if (!initialized) {
-      urlCompanies =
-          "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
+      urlCompanies = Urls.urlCompanies;
     }
     Response response = await post(
       urlCompanies,
@@ -75,8 +65,7 @@ class MpsbrApi extends GetConnect {
 
   Future<List<Company>> getAllCompanies() async {
     if (!initialized) {
-      urlCompanies =
-          "https://api.github.com/gists/9f112759ffde2be9e00219228eea0c0b";
+      urlCompanies = Urls.urlCompanies;
     }
     Response response = await get(
       urlCompanies,

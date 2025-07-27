@@ -41,9 +41,9 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 30,
             children: <Widget>[
-              const Text(
-                'MPS Br.',
-                style: TextStyle(fontFamily: "Edu", fontSize: 40),
+              Text(
+                widget.title,
+                style: const TextStyle(fontFamily: "Edu", fontSize: 40),
               ),
               Text(
                 description,
