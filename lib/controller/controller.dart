@@ -53,10 +53,10 @@ class ControllerLevel extends GetxController {
   RxList choices = [].obs;
   RxList answers = [].obs;
   RxBool aproved = false.obs;
+  final MpsbrApi api = Get.put(MpsbrApi());
 
-  Future<List<dynamic>> searchQuestion() async {
-    MpsbrApi api = MpsbrApi();
-    List<dynamic> list = await api.searchQuestions(level: level.value);
+  Future<List<Question>> searchQuestion() async {
+    List<Question> list = await api.searchQuestions(level: level.value);
     questions.value = list;
     return list;
   }

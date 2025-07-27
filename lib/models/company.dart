@@ -1,4 +1,5 @@
 import 'package:msbrapp/models/level.dart';
+import 'dart:convert';
 
 class Company {
   final String name;
@@ -11,6 +12,12 @@ class Company {
       name: map["name"],
       level: map["levels"] != null ? Level.fromMap(map["levels"]) : null,
     );
+  }
+  static List<Company> listFromJson(String map) {
+    return json
+        .decode(map)
+        .map<Company>((value) => Company.fromMap(value))
+        .toList();
   }
 
   Map<String, dynamic> toJson() {

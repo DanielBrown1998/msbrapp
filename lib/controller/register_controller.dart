@@ -14,7 +14,9 @@ class RegisterController extends GetxController {
   }
 
   Future<Company?> search(String companyName) async {
-    List<Company> companies = await api.getAllCompanies();
+    List<Company> companies = await api.getAllCompanies(
+      nameCompany: companyName,
+    );
     for (Company item in companies) {
       if (item.name == companyName) {
         company.value = item;

@@ -32,15 +32,14 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         ));
   }
 
-  void setDataInQuestion(List<dynamic> data, ControllerLevel controllerLevel) {
+  void setDataInQuestion(List<Question> data, ControllerLevel controllerLevel) {
     for (int indexQuestion = 0; indexQuestion < data.length; indexQuestion++) {
-      Question question = Question.fromJson(data[indexQuestion]);
       final ControllerQuestion controllerQuestion = Get.put(
         ControllerQuestion(),
-        tag: data[indexQuestion]['id'],
+        tag: data[indexQuestion].id,
       );
-      controllerQuestion.setQuestion(question);
-      int len = data[indexQuestion]['options'].length;
+      controllerQuestion.setQuestion(data[indexQuestion]);
+      int len = data[indexQuestion].options.length;
       controllerLevel.answers.value = List.generate(len, (index) => -1);
       controllerQuestion.colors.value = List.generate(
         len,
@@ -115,7 +114,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                         //get question
                         ControllerQuestion controllerQuestion =
                             Get.find<ControllerQuestion>(
-                              tag: snapshot.data![indexQuestion]['id'],
+                              tag: snapshot.data![indexQuestion].id,
                             );
                         return Questioncard(
                           controllerLevel: controllerLevel,
