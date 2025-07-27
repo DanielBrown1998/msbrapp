@@ -39,7 +39,6 @@ class _HomeState extends State<Home> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 30,
             children: <Widget>[
               Text(
                 widget.title,
