@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 import 'package:msbrapp/controller/register_controller.dart';
 import 'package:msbrapp/models/company.dart';
 import 'package:msbrapp/screens/home.dart';
 
-class Registerscreen extends StatefulWidget {
-  const Registerscreen({super.key});
+// ignore: must_be_immutable
+class Registerscreen extends StatelessWidget {
+  Registerscreen({super.key});
 
-  @override
-  State<Registerscreen> createState() => _RegisterscreenState();
-}
-
-class _RegisterscreenState extends State<Registerscreen> {
   TextEditingController searchCompanyController = TextEditingController();
-  TextEditingController registerCompanyController = TextEditingController();
+  // TextEditingController registerCompanyController = TextEditingController(); // Unused
 
   RegisterController registerController = Get.put(RegisterController());
-
-  bool visible = false;
+  RxBool visible = false.obs;
+  RxString companyName = "".obs;
+  String keyStorage = "company";
+  late GetStorage storage;
 
   Future<void> _authenticate() async {
     var companyController = Get.find<RegisterController>();
-    if (!visible) {
+    if (!visible.value) {
       Company? findCompany = await companyController.search(
         searchCompanyController.text,
       );
       if (findCompany == null) {
-        setState(() {
-          visible = true;
-        });
+        visible.value = true;
       } else {
         Get.to(
           Home(),
@@ -49,8 +46,15 @@ class _RegisterscreenState extends State<Registerscreen> {
     }
   }
 
+  Future<void> loadStorage() async {
+    storage = GetStorage();
+    await storage.initStorage;
+    companyName.value = storage.read(keyStorage) ?? "";
+  }
+
   @override
   Widget build(BuildContext context) {
+    loadStorage();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -83,64 +87,84 @@ class _RegisterscreenState extends State<Registerscreen> {
             //search company if not company, so regsiter
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Visibility(
-                visible: !visible,
-                child: TextFormField(
-                  controller: searchCompanyController,
-                  maxLines: 1,
-                  maxLength: 50,
-                  decoration: InputDecoration(label: Text("buscar empresa")),
+              child: Obx(
+                () => Visibility(
+                  visible: !visible.value,
+                  child:
+                      (companyName.value.isNotEmpty)
+                          ? TextFormField(
+                            key: ValueKey(companyName.value),
+                            initialValue: companyName.value,
+                            controller: null,
+                            maxLines: 1,
+                            maxLength: 50,
+                            decoration: InputDecoration(
+                              label: Text("buscar empresa"),
+                            ),
+                          )
+                          : TextFormField(
+                            controller: searchCompanyController,
+                            maxLines: 1,
+                            maxLength: 50,
+                            decoration: InputDecoration(
+                              label: Text("buscar empresa"),
+                            ),
+                          ),
                 ),
               ),
             ),
+
             //register company
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Visibility(
-                visible: visible,
-                child: TextFormField(
-                  initialValue: searchCompanyController.text,
-                  maxLines: 1,
-                  maxLength: 50,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    label: Text("registrar empresa"),
-                    helperText: "deseja cadastrar essa Compania?",
-                  ),
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment:
-                  (visible)
-                      ? MainAxisAlignment.spaceEvenly
-                      : MainAxisAlignment.center,
-              children: [
-                Visibility(
-                  visible: visible,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        visible = false;
-                      });
-                    },
-                    child: Text("esquecer"),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await _authenticate();
-                  },
-                  child: Text(
-                    (!visible) ? "buscar" : "cadastrar",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: (visible) ? Colors.green : Colors.black54,
+            Obx(
+              () => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Visibility(
+                  visible: visible.value,
+                  child: TextFormField(
+                    initialValue: searchCompanyController.text,
+                    maxLines: 1,
+                    maxLength: 50,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      label: Text("registrar empresa"),
+                      helperText: "deseja cadastrar essa Compania?",
                     ),
                   ),
                 ),
-              ],
+              ),
+            ),
+            Obx(
+              () => Row(
+                mainAxisAlignment:
+                    (visible.value)
+                        ? MainAxisAlignment.spaceEvenly
+                        : MainAxisAlignment.center,
+                children: [
+                  Visibility(
+                    visible: visible.value,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        visible.value = false;
+                      },
+                      child: Text("esquecer"),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      storage.write(keyStorage, searchCompanyController.text);
+                      await _authenticate();
+                    },
+                    child: Text(
+                      (!visible.value) ? "buscar" : "cadastrar",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: (visible.value) ? Colors.green : Colors.black54,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
